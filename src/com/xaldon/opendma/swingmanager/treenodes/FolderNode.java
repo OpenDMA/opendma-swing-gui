@@ -183,7 +183,7 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
                 OdmaDocument doc = (OdmaDocument)containment;
                 data[i][5] = doc.getTitle();
                 data[i][6] = doc.getVersion();
-                data[i][7] = doc.getCombinedMimeType();
+                data[i][7] = doc.getCombinedContentType();
                 data[i][8] = doc.getCheckedOut();
             }
         }
