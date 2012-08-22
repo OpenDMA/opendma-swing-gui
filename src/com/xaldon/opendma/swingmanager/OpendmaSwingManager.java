@@ -31,8 +31,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.opendma.AdaptorManager;
-import org.opendma.OdmaIdImpl;
 import org.opendma.OdmaSession;
+import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaRepository;
 import org.opendma.exceptions.OdmaException;
 
@@ -72,7 +72,7 @@ public class OpendmaSwingManager extends JFrame
         {
             filenetSession = AdaptorManager.getSession(filenetConnectionProperties);
             System.out.println("Retrieving Filenet repository...");
-            filenetRepository = filenetSession.getRepository(new OdmaIdImpl("<objectstore-name>"));
+            filenetRepository = filenetSession.getRepository(new OdmaId("<objectstore-name>"));
         }
         catch (OdmaException e)
         {
@@ -81,7 +81,10 @@ public class OpendmaSwingManager extends JFrame
             System.exit(0);
         }
         // IBMCM
+        /*
         Properties ibmcmConnectionProperties = new Properties();
+        //ibmcmConnectionProperties.put("user", "<username>");
+        //ibmcmConnectionProperties.put("password", "<password>");
         ibmcmConnectionProperties.put("user", "<username>");
         ibmcmConnectionProperties.put("password", "<password>");
         ibmcmConnectionProperties.put("url", "ibmcm:<libraryserver-name>");
@@ -92,7 +95,7 @@ public class OpendmaSwingManager extends JFrame
         {
             ibmcmSession = AdaptorManager.getSession(ibmcmConnectionProperties);
             System.out.println("Retrieving IBMCM repository...");
-            ibmcmRepository = ibmcmSession.getRepository(new OdmaIdImpl("<libraryserver>"));
+            ibmcmRepository = ibmcmSession.getRepository(new OdmaId("<libraryserver>"));
         }
         catch (OdmaException e)
         {
@@ -100,9 +103,10 @@ public class OpendmaSwingManager extends JFrame
             e.printStackTrace(System.out);
             System.exit(0);
         }
+        */
         // start ui
         System.out.println("Initialized. Starting UI...");
-        new OpendmaSwingManager(new OdmaRepository[]{ filenetRepository, ibmcmRepository });
+        new OpendmaSwingManager(new OdmaRepository[]{ filenetRepository /*, ibmcmRepository*/ });
     }
     
     public static void loadAdaptors() throws Exception
@@ -112,6 +116,7 @@ public class OpendmaSwingManager extends JFrame
         {
             Class.forName("com.xaldon.opendma.adaptor.filenet.Adaptor");
             Class.forName("com.xaldon.opendma.adaptor.ibmcm.Adaptor");
+            Class.forName("com.xaldon.opendma.adaptor.cmis.Adaptor");
         }
         catch (ClassNotFoundException e)
         {
