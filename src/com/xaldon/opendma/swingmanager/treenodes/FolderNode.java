@@ -74,7 +74,7 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                PropertiesWindow.showForObject(contextMenuItem.getContainment());
+                PropertiesWindow.showForObject(contextMenuItem.getContainable());
             }});
         tableContextMenu.add(menuItem);
         // add content menu to view table
@@ -172,7 +172,7 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
         for(int i = 0; i < associations.size(); i++)
         {
             OdmaAssociation assoc = associations.get(i);
-            OdmaObject containment = assoc.getContainment();
+            OdmaObject containment = assoc.getContainable();
             data[i][0] = assoc.getName();
             data[i][1] = containment.getOdmaClass().getQName();
             data[i][2] = assoc.getCreatedAt();
