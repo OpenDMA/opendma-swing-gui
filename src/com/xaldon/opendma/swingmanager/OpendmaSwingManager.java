@@ -10,11 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JFrame;
@@ -30,10 +25,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.opendma.AdaptorManager;
-import org.opendma.OdmaSession;
+import org.opendma.api.OdmaAdaptorDiscovery;
 import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaRepository;
+import org.opendma.api.OdmaSession;
 import org.opendma.exceptions.OdmaException;
 
 import com.xaldon.opendma.swingmanager.treemodel.ContextMenuNode;
@@ -49,17 +44,8 @@ public class OpendmaSwingManager extends JFrame
     public static void main(String[] args)
     {
         System.setProperty("wasp.location", "<location-of-systinet-wasp>");
-        // register Adaptors
-        try
-        {
-            loadAdaptors();
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error loading Adaptors: "+e);
-            e.printStackTrace(System.out);
-            System.exit(0);
-        }
+        // Adaptor Discovery
+        OdmaAdaptorDiscovery adaptorDiscovery = new OdmaAdaptorDiscovery();
         // Filenet
         Properties filenetConnectionProperties = new Properties();
         filenetConnectionProperties.put("user", "<username>");
@@ -70,7 +56,7 @@ public class OpendmaSwingManager extends JFrame
         OdmaRepository filenetRepository = null;
         try
         {
-            filenetSession = AdaptorManager.getSession(filenetConnectionProperties);
+            filenetSession = adaptorDiscovery.getAdaptor("filenetp8").connect(filenetConnectionProperties);
             System.out.println("Retrieving Filenet repository...");
             filenetRepository = filenetSession.getRepository(new OdmaId("<objectstore-name>"));
         }
@@ -93,7 +79,7 @@ public class OpendmaSwingManager extends JFrame
         OdmaRepository ibmcmRepository = null;
         try
         {
-            ibmcmSession = AdaptorManager.getSession(ibmcmConnectionProperties);
+            ibmcmSession = adaptorDiscovery.getAdaptor("ibmcm").connect(ibmcmConnectionProperties);
             System.out.println("Retrieving IBMCM repository...");
             ibmcmRepository = ibmcmSession.getRepository(new OdmaId("<libraryserver>"));
         }
@@ -107,36 +93,6 @@ public class OpendmaSwingManager extends JFrame
         // start ui
         System.out.println("Initialized. Starting UI...");
         new OpendmaSwingManager(new OdmaRepository[]{ filenetRepository /*, ibmcmRepository*/ });
-    }
-    
-    public static void loadAdaptors() throws Exception
-    {
-        //loadFilenetAdaptor();
-        try
-        {
-            Class.forName("com.xaldon.opendma.adaptor.filenet.Adaptor");
-            Class.forName("com.xaldon.opendma.adaptor.ibmcm.Adaptor");
-            Class.forName("com.xaldon.opendma.adaptor.cmis.Adaptor");
-        }
-        catch (ClassNotFoundException e)
-        {
-            System.out.println("Error loading adapter: "+e);
-            e.printStackTrace(System.out);
-        }
-    }
-    
-    public static void loadFilenetAdaptor() throws Exception
-    {
-        List<URL> classPath = new ArrayList<URL>();
-        classPath.add(new File( "<p8-api-file>" ).toURI().toURL());
-        classPath.add(new File( "<p8-api-file>" ).toURI().toURL());
-        classPath.add(new File( "<p8-api-file>" ).toURI().toURL());
-        classPath.add(new File( "<p8-api-file>" ).toURI().toURL());
-        classPath.add(new File( "<p8-api-file>" ).toURI().toURL());
-        classPath.add(new File( "<p8-api-file>" ).toURI().toURL());
-        URL[] urls = classPath.toArray(new URL[0]);
-        ClassLoader classLoader = new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
-        classLoader.loadClass("com.xaldon.opendma.adaptor.filenet.Adaptor").newInstance();
     }
     
     protected JSplitPane splitPane;
