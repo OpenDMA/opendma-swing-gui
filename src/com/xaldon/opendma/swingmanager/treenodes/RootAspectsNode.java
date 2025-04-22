@@ -7,7 +7,6 @@ import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.opendma.api.OdmaClass;
-import org.opendma.api.collections.OdmaClassEnumeration;
 
 import com.xaldon.opendma.swingmanager.treemodel.IconNode;
 
@@ -16,13 +15,13 @@ public class RootAspectsNode extends DefaultMutableTreeNode implements IconNode
     
     private static final long serialVersionUID = -4056310757313058899L;
 
-    protected OdmaClassEnumeration rootAspects;
+    protected Iterable<OdmaClass> rootAspects;
     
     protected boolean childrenCreated = false;
     
     protected static Icon aspectIcon = new ImageIcon("aspect.png");
     
-    public RootAspectsNode(OdmaClassEnumeration aspects)
+    public RootAspectsNode(Iterable<OdmaClass> aspects)
     {
         this.rootAspects = aspects;
     }
@@ -49,7 +48,7 @@ public class RootAspectsNode extends DefaultMutableTreeNode implements IconNode
     protected void createChildren()
     {
         childrenCreated = true;
-        Iterator itSubClasses = rootAspects.iterator();
+        Iterator<OdmaClass> itSubClasses = rootAspects.iterator();
         while(itSubClasses.hasNext())
         {
             OdmaClass subClass = (OdmaClass)itSubClasses.next();

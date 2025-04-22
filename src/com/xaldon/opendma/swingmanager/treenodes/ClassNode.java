@@ -21,11 +21,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.opendma.OdmaTypes;
 import org.opendma.api.OdmaClass;
+import org.opendma.api.OdmaCommonNames;
 import org.opendma.api.OdmaPropertyInfo;
-import org.opendma.api.collections.OdmaClassEnumeration;
-import org.opendma.api.collections.OdmaPropertyInfoEnumeration;
 
 import com.xaldon.opendma.swingmanager.TableModelProvider;
 import com.xaldon.opendma.swingmanager.dialogs.PropertiesWindow;
@@ -130,11 +128,11 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
         boolean isValidClass = false;
         while(test != null)
         {
-            if(test.getQName().equals(OdmaTypes.CLASS_OBJECT))
+            if(test.getQName().equals(OdmaCommonNames.CLASS_OBJECT))
             {
                 isValidClass = true;
             }
-            test = test.getParent();
+            test = test.getSuperClass();
         }
         isAspectCache = Boolean.valueOf(!isValidClass);
         return isAspectCache.booleanValue();
@@ -158,8 +156,8 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
     {
         childrenCreated = true;
         System.out.println("Getting sub classes...");
-        OdmaClassEnumeration subClasses = odmaClass.getSubClasses();
-        Iterator itSubClasses = subClasses.iterator();
+        Iterable<OdmaClass> subClasses = odmaClass.getSubClasses();
+        Iterator<OdmaClass> itSubClasses = subClasses.iterator();
         while(itSubClasses.hasNext())
         {
             System.out.println("Creating class node...");
@@ -181,9 +179,9 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
     public TableModel getTableModel()
     {
         System.out.println("Getting declared properties...");
-        OdmaPropertyInfoEnumeration declaredProperties = odmaClass.getDeclaredProperties();
+        Iterable<OdmaPropertyInfo> declaredProperties = odmaClass.getDeclaredProperties();
         propertyInfos = new ArrayList<OdmaPropertyInfo>();
-        Iterator it = declaredProperties.iterator();
+        Iterator<OdmaPropertyInfo> it = declaredProperties.iterator();
         while(it.hasNext())
         {
             propertyInfos.add((OdmaPropertyInfo)it.next());
@@ -197,10 +195,10 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
             Integer dataType = pi.getDataType();
             String dataTypeDisplay = (String)datatypeValues.get(dataType);
             data[i][2] = dataTypeDisplay != null ? dataTypeDisplay : "Unknown ("+dataType.toString()+")";
-            data[i][3] = pi.getMultiValue();
-            data[i][4] = pi.getRequired();
-            data[i][5] = pi.getReadOnly();
-            data[i][6] = pi.getHidden();
+            data[i][3] = pi.isMultiValue();
+            data[i][4] = pi.isRequired();
+            data[i][5] = pi.isReadOnly();
+            data[i][6] = pi.isHidden();
             OdmaClass referenceClass = pi.getReferenceClass();
             data[i][7] = referenceClass == null ? null : referenceClass.getQName();
             data[i][8] = pi.getId();
@@ -262,7 +260,7 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
             }};
     }
 
-    protected static Map datatypeValues = new HashMap();
+    protected static Map<Integer, String> datatypeValues = new HashMap<Integer, String>();
     
     static
     {

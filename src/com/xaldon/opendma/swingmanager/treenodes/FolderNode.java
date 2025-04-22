@@ -21,8 +21,6 @@ import org.opendma.api.OdmaAssociation;
 import org.opendma.api.OdmaDocument;
 import org.opendma.api.OdmaFolder;
 import org.opendma.api.OdmaObject;
-import org.opendma.api.collections.OdmaAssociationEnumeration;
-import org.opendma.api.collections.OdmaFolderEnumeration;
 
 import com.xaldon.opendma.swingmanager.TableModelProvider;
 import com.xaldon.opendma.swingmanager.dialogs.PropertiesWindow;
@@ -139,8 +137,8 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
     {
         childrenCreated = true;
         System.out.println("Getting sub folders...");
-        OdmaFolderEnumeration subFolders = odmaFolder.getSubFolders();
-        Iterator itSubFolders = subFolders.iterator();
+        Iterable<OdmaFolder> subFolders = odmaFolder.getSubFolders();
+        Iterator<OdmaFolder> itSubFolders = subFolders.iterator();
         while(itSubFolders.hasNext())
         {
             System.out.println("Creating folder node...");
@@ -161,9 +159,9 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
 
     public TableModel getTableModel()
     {
-        OdmaAssociationEnumeration assocs = odmaFolder.getAssociations();
+        Iterable<OdmaAssociation> assocs = odmaFolder.getAssociations();
         associations = new ArrayList<OdmaAssociation>();
-        Iterator it = assocs.iterator();
+        Iterator<OdmaAssociation> it = assocs.iterator();
         while(it.hasNext())
         {
             associations.add((OdmaAssociation)it.next());
@@ -184,7 +182,7 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
                 data[i][5] = doc.getTitle();
                 data[i][6] = doc.getVersion();
                 data[i][7] = doc.getCombinedContentType();
-                data[i][8] = doc.getCheckedOut();
+                data[i][8] = doc.isCheckedOut();
             }
         }
         return new AbstractTableModel(){

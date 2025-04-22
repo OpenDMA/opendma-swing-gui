@@ -21,8 +21,7 @@ import javax.swing.table.TableModel;
 import org.opendma.api.OdmaObject;
 import org.opendma.api.OdmaProperty;
 import org.opendma.api.OdmaPropertyInfo;
-import org.opendma.api.collections.OdmaPropertyInfoEnumeration;
-import org.opendma.exceptions.OdmaObjectNotFoundException;
+import org.opendma.exceptions.OdmaPropertyNotFoundException;
 
 import com.xaldon.opendma.swingmanager.SpringUtilities;
 
@@ -53,7 +52,7 @@ public class PropertiesWindow extends JFrame
         setContentPane(contentPane);
         // create properties table
         odmaObject = obj;
-        OdmaPropertyInfoEnumeration allPropertyInfos = odmaObject.getOdmaClass().getProperties();
+        Iterable<OdmaPropertyInfo> allPropertyInfos = odmaObject.getOdmaClass().getProperties();
         Iterator<?> it = allPropertyInfos.iterator();
         while(it.hasNext())
         {
@@ -62,7 +61,7 @@ public class PropertiesWindow extends JFrame
             {
                 allProperties.add(odmaObject.getProperty(pi.getQName()));
             }
-            catch(OdmaObjectNotFoundException onfe)
+            catch(OdmaPropertyNotFoundException onfe)
             {
                 System.out.println("Object is missing declared property.");
             }
