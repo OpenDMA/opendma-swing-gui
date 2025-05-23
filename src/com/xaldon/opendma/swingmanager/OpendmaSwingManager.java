@@ -10,6 +10,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JFrame;
@@ -43,56 +47,78 @@ public class OpendmaSwingManager extends JFrame
 
     public static void main(String[] args)
     {
-        System.setProperty("wasp.location", "<location-of-systinet-wasp>");
         // Adaptor Discovery
         OdmaAdaptorDiscovery adaptorDiscovery = new OdmaAdaptorDiscovery();
-        // Filenet
-        Properties filenetConnectionProperties = new Properties();
-        filenetConnectionProperties.put("user", "<username>");
-        filenetConnectionProperties.put("password", "<password>");
-        filenetConnectionProperties.put("url", "filenetp8:<filenet-p8-endpoint-url>");
-        System.out.println("Setting up Filenet session...");
-        OdmaSession filenetSession = null;
-        OdmaRepository filenetRepository = null;
+        // load config from properties
+        Properties cfg = new Properties();
+        FileInputStream is;
         try
         {
-            filenetSession = adaptorDiscovery.getAdaptor("filenetp8").connect(filenetConnectionProperties);
-            System.out.println("Retrieving Filenet repository...");
-            filenetRepository = filenetSession.getRepository(new OdmaId("<objectstore-name>"));
+            is = new FileInputStream("./opendma-swing-gui.properties");
+            try
+            {
+                cfg.load(is);
+            }
+            finally
+            {
+                is.close();
+            }
         }
-        catch (OdmaException e)
+        catch(IOException ioe)
         {
-            System.out.println("Error establishing connection: "+e);
-            e.printStackTrace(System.out);
-            System.exit(0);
+            System.err.println("Error reading config file ./opendma-swing-gui.properties:");
+            ioe.printStackTrace(System.err);
+            return;
         }
-        // IBMCM
-        /*
-        Properties ibmcmConnectionProperties = new Properties();
-        //ibmcmConnectionProperties.put("user", "<username>");
-        //ibmcmConnectionProperties.put("password", "<password>");
-        ibmcmConnectionProperties.put("user", "<username>");
-        ibmcmConnectionProperties.put("password", "<password>");
-        ibmcmConnectionProperties.put("url", "ibmcm:<libraryserver-name>");
-        System.out.println("Setting up IBMCM session...");
-        OdmaSession ibmcmSession = null;
-        OdmaRepository ibmcmRepository = null;
+        // setup
+        ArrayList<OdmaRepository> repos = new ArrayList<OdmaRepository>();
+        String countStr = cfg.getProperty("count");
+        if(countStr == null)
+        {
+            System.err.println("Missing config key: count");
+            return;
+        }
+        int count;
         try
         {
-            ibmcmSession = adaptorDiscovery.getAdaptor("ibmcm").connect(ibmcmConnectionProperties);
-            System.out.println("Retrieving IBMCM repository...");
-            ibmcmRepository = ibmcmSession.getRepository(new OdmaId("<libraryserver>"));
+            count = Integer.parseInt(countStr);
         }
-        catch (OdmaException e)
+        catch(NumberFormatException nfe)
         {
-            System.out.println("Error establishing connection: "+e);
-            e.printStackTrace(System.out);
-            System.exit(0);
+            System.err.println("Invalid number in config key: count");
+            return;
         }
-        */
+        for(int i = 0; i < count; i++)
+        {
+            String adaptorId = cfg.getProperty("repo."+i+".adaptor");
+            String repoId = cfg.getProperty("repo."+i+".repo");
+            Properties adaptorProps = new Properties();
+            for(String s : cfg.stringPropertyNames())
+            {
+                String prefix = "repo."+i+".props.";
+                if(s.startsWith(prefix))
+                {
+                    adaptorProps.setProperty(s.substring(prefix.length()), cfg.getProperty(s));
+                }
+            }
+            System.out.println("Setting up session with adaptor "+adaptorId+"...");
+            try
+            {
+                OdmaSession session = adaptorDiscovery.getAdaptor(adaptorId).connect(adaptorProps);
+                System.out.println("Retrieving repository "+repoId+"...");
+                OdmaRepository repo = session.getRepository(new OdmaId(repoId));
+                repos.add(repo);
+            }
+            catch (OdmaException e)
+            {
+                System.out.println("Error establishing connection: "+e);
+                e.printStackTrace(System.out);
+                return;
+            }
+        }
         // start ui
         System.out.println("Initialized. Starting UI...");
-        new OpendmaSwingManager(new OdmaRepository[]{ filenetRepository /*, ibmcmRepository*/ });
+        new OpendmaSwingManager(repos);
     }
     
     protected JSplitPane splitPane;
@@ -101,7 +127,7 @@ public class OpendmaSwingManager extends JFrame
     
     protected JScrollPane viewScrollPane = new JScrollPane(emptyViewComponent);
     
-    public OpendmaSwingManager(OdmaRepository[] repositories)
+    public OpendmaSwingManager(List<OdmaRepository> repositories)
     {
         // set the title of this Window
         super("OpenDMA Swing Manager");
