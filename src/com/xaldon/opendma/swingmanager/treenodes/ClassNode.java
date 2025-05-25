@@ -155,16 +155,13 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
     protected void createChildren()
     {
         childrenCreated = true;
-        System.out.println("Getting sub classes...");
         Iterable<OdmaClass> subClasses = odmaClass.getSubClasses();
         Iterator<OdmaClass> itSubClasses = subClasses.iterator();
         while(itSubClasses.hasNext())
         {
-            System.out.println("Creating class node...");
             OdmaClass subClass = (OdmaClass)itSubClasses.next();
             add(new ClassNode(subClass));
         }
-        System.out.println("Done.");
     }
 
     public String toString()
@@ -178,7 +175,6 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
     
     public TableModel getTableModel()
     {
-        System.out.println("Getting declared properties...");
         Iterable<OdmaPropertyInfo> declaredProperties = odmaClass.getDeclaredProperties();
         propertyInfos = new ArrayList<OdmaPropertyInfo>();
         Iterator<OdmaPropertyInfo> it = declaredProperties.iterator();
@@ -203,7 +199,6 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
             data[i][7] = referenceClass == null ? null : referenceClass.getQName();
             data[i][8] = pi.getId();
         }
-        System.out.println("Done.");
         return new AbstractTableModel(){
 
             private static final long serialVersionUID = 3785655523283899607L;
@@ -228,7 +223,6 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
             {
                 return data[rowIndex][columnIndex];
                 /*
-                System.out.println("Getting value row="+rowIndex+" col="+columnIndex);
                 OdmaPropertyInfo pi = (OdmaPropertyInfo)lst.get(rowIndex);
                 switch(columnIndex)
                 {

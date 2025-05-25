@@ -136,16 +136,13 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
     protected void createChildren()
     {
         childrenCreated = true;
-        System.out.println("Getting sub folders...");
         Iterable<OdmaFolder> subFolders = odmaFolder.getSubFolders();
         Iterator<OdmaFolder> itSubFolders = subFolders.iterator();
         while(itSubFolders.hasNext())
         {
-            System.out.println("Creating folder node...");
             OdmaFolder subFolder = (OdmaFolder)itSubFolders.next();
             add(new FolderNode(subFolder));
         }
-        System.out.println("Done.");
     }
 
     public String toString()

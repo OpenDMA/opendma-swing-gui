@@ -72,13 +72,9 @@ public class RepositoryNode extends DefaultMutableTreeNode implements TableModel
     protected void createChildren()
     {
         childrenCreated = true;
-        System.out.println("Geeting root class...");
         add(new ClassNode(odmaRepository.getRootClass()));
-        System.out.println("Done. Geeting root aspects...");
         add(new RootAspectsNode(odmaRepository.getRootAspects()));
-        System.out.println("Done. Geeting root folder...");
         OdmaFolder rootFolder = odmaRepository.getRootFolder();
-        System.out.println("Done.");
         if(rootFolder != null)
         {
             add(new FolderNode(rootFolder,"Root Folder"));
