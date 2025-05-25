@@ -91,7 +91,17 @@ public class OpendmaSwingManager extends JFrame
         for(int i = 0; i < count; i++)
         {
             String adaptorId = cfg.getProperty("repo."+i+".adaptor");
+            if(adaptorId == null)
+            {
+                System.err.println("Missing config key: repo."+i+".adaptor");
+                return;
+            }
             String repoId = cfg.getProperty("repo."+i+".repo");
+            if(repoId == null)
+            {
+                System.err.println("Missing config key: repo."+i+".repo");
+                return;
+            }
             Properties adaptorProps = new Properties();
             for(String s : cfg.stringPropertyNames())
             {
@@ -111,8 +121,8 @@ public class OpendmaSwingManager extends JFrame
             }
             catch (OdmaException e)
             {
-                System.out.println("Error establishing connection: "+e);
-                e.printStackTrace(System.out);
+                System.err.println("Error establishing connection: "+e);
+                e.printStackTrace(System.err);
                 return;
             }
         }
@@ -138,7 +148,7 @@ public class OpendmaSwingManager extends JFrame
           }
         catch(Exception e)
         {
-            System.out.println("Error setting native Look-and-Feel: " + e);
+            System.err.println("Error setting native Look-and-Feel: " + e);
         }
         // exit this program when the window is closed
         addWindowListener(new WindowAdapter(){
