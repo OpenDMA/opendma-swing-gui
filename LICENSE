@@ -1,0 +1,16 @@
+This product bundles SpringUtilities, which is available under a
+"3-clause BSD" license. For details, see
+src/main/java/com/xaldon/opendma/swingmanager/SpringUtilities.java.
+
+This product bundles the artwork contained in database.png and
+server_database.png from the famfamfam.com "silk icon set v013"
+licensed under Creative Commons Attribution 2.5 License. See:
+http://www.famfamfam.com/lab/icons/silk/
+http://creativecommons.org/licenses/by/2.5/
+
+This product bundles artwork contained in class_obj.gif from
+the Eclipse 3.7 IDE licensed under Eclipse Public License 1.0.
+
+This products bundles artwork contained in aspect.png which has
+been derived from artwork contained in the Eclipse 3.7 IDE licensed
+under Eclipse Public License 1.0.
