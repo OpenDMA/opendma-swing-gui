@@ -90,17 +90,22 @@ public class OpendmaSwingManager extends JFrame
         }
         for(int i = 0; i < count; i++)
         {
+            String enabled = cfg.getProperty("repo."+i+".enabled");
+            if(enabled != null && !enabled.equalsIgnoreCase("true"))
+            {
+                continue;
+            }
             String adaptorId = cfg.getProperty("repo."+i+".adaptor");
             if(adaptorId == null)
             {
-                System.err.println("Missing config key: repo."+i+".adaptor");
-                return;
+                System.err.println("Missing config key: repo."+i+".adaptor. Skipping");
+                continue;
             }
             String repoId = cfg.getProperty("repo."+i+".repo");
             if(repoId == null)
             {
-                System.err.println("Missing config key: repo."+i+".repo");
-                return;
+                System.err.println("Missing config key: repo."+i+".repo. Skipping");
+                continue;
             }
             Properties adaptorProps = new Properties();
             for(String s : cfg.stringPropertyNames())
