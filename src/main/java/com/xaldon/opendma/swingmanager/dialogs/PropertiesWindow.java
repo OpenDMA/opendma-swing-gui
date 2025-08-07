@@ -136,8 +136,9 @@ public class PropertiesWindow extends JFrame
         contentPane.add(tabbedPane, BorderLayout.CENTER);
         // add buttons
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(new JButton("Apply"));
-        buttonPanel.add(new JButton("Close"));
+        JButton closeButton = new JButton("Close");
+        closeButton.addActionListener(e -> dispose());
+        buttonPanel.add(closeButton);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
         setSize(300, 400);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
