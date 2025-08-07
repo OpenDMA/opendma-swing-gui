@@ -1,9 +1,12 @@
 package com.xaldon.opendma.swingmanager.dialogs;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.swing.JButton;
@@ -16,12 +19,17 @@ import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-import org.opendma.api.OdmaContent;
+import org.opendma.api.OdmaGuid;
+import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaObject;
 import org.opendma.api.OdmaProperty;
 import org.opendma.api.OdmaPropertyInfo;
+import org.opendma.api.OdmaType;
 import org.opendma.exceptions.OdmaPropertyNotFoundException;
 
 import com.xaldon.opendma.swingmanager.SpringUtilities;
@@ -43,7 +51,10 @@ public class PropertiesWindow extends JFrame
     }
 
     private JPanel contentPane;
+    
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
+    @SuppressWarnings("serial")
     private PropertiesWindow(OdmaObject obj)
     {
         super("Properties: "+obj.getId());
@@ -96,22 +107,116 @@ public class PropertiesWindow extends JFrame
                 else
                 {
                     Object value = p.getValue();
+                    if(p.isMultiValue()) {
+                        if(p.getType() == OdmaType.REFERENCE) {
+                            return "{ object set }";
+                        } else {
+                            return value.toString();
+                        }
+                    }
+                    if(p.getType() == OdmaType.REFERENCE) {
+                        return value;
+                    }
                     if(value == null)
                     {
                         return "<null>";
                     }
-                    if(value instanceof OdmaObject)
-                    {
-                        return "[Object]";
+                    switch(p.getType()) {
+                    case STRING:
+                    case INTEGER:
+                    case SHORT:
+                    case LONG:
+                    case FLOAT:
+                    case DOUBLE:
+                        return value.toString();
+                    case BOOLEAN:
+                        return ((Boolean)value).booleanValue() ? "TRUE" : "FALSE";
+                    case DATETIME:
+                        return dateFormat.format((Date)value);
+                    case BLOB:
+                        byte[] bytes = (byte[])value;
+                        String result = bytes.length + " bytes.";
+                        for(int i = 0; i < Math.max(bytes.length, 10); i++) {
+                            result = result + " 0x" + Integer.toHexString(bytes[i]);
+                        }
+                        if(bytes.length > 10) {
+                            result = result + " ...";
+                        }
+                        return result;
+                    case REFERENCE:
+                        return "[OBJECT]";
+                    case CONTENT:
+                        return "[CONTENT]";
+                    case ID:
+                        return ((OdmaId)value).toString();
+                    case GUID:
+                        return ((OdmaGuid)value).toString();
+                    default:
+                        return "[unknown type]";
                     }
-                    if(value instanceof OdmaContent)
-                    {
-                        return "[Content]";
-                    }
-                    return value.toString();
                 }
-            }};
-        JTable propertiesTable = new JTable(tm);
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                if(columnIndex == 0) {
+                    return false;
+                }
+                OdmaProperty p = allProperties.get(rowIndex);
+                return !p.isMultiValue() && p.getType() == OdmaType.REFERENCE;
+            }
+        };
+        JTable propertiesTable = new JTable(tm) {
+
+            @Override
+            public TableCellEditor getCellEditor(int row, int column) {
+                OdmaProperty p = allProperties.get(row);
+                if(p.isMultiValue()) {
+                    return super.getCellEditor(row, column);
+                } else {
+                    if(p.getType() == OdmaType.REFERENCE) {
+                        return new LabelButtonCellEditor();
+                    } else {
+                        return super.getCellEditor(row, column);
+                    }
+                }
+            }
+            
+            @Override
+            public TableCellRenderer getCellRenderer(int row, int column) {
+                if(column == 0) {
+                    return super.getCellRenderer(row, column);
+                }
+                OdmaProperty p = allProperties.get(row);
+                if(p.isMultiValue()) {
+                    return super.getCellRenderer(row, column);
+                } else {
+                    if(p.getType() == OdmaType.REFERENCE) {
+                        return new DefaultTableCellRenderer() {
+                            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                                return  super.getTableCellRendererComponent(table, value==null?"<null>":"[Object] "+((OdmaObject)value).getId(), isSelected, hasFocus, row, column);
+                            };
+                        };
+                    } else {
+                        return super.getCellRenderer(row, column);
+                    }
+                }
+            }
+
+        };
+        propertiesTable.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (!isSelected) {
+                    c.setBackground(javax.swing.UIManager.getColor("Panel.background"));
+                } else {
+                    c.setBackground(table.getSelectionBackground());
+                }
+                return c;
+            }
+        });
         // create the info panel
         JPanel infoPanel = new JPanel(new SpringLayout());
         JLabel idLabel = new JLabel("ID :", JLabel.TRAILING);
