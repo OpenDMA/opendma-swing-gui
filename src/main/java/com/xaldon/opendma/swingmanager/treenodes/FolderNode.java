@@ -23,7 +23,7 @@ import org.opendma.api.OdmaFolder;
 import org.opendma.api.OdmaObject;
 
 import com.xaldon.opendma.swingmanager.TableModelProvider;
-import com.xaldon.opendma.swingmanager.dialogs.PropertiesWindow;
+import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
 import com.xaldon.opendma.swingmanager.treemodel.ContextMenuNode;
 import com.xaldon.opendma.swingmanager.treemodel.ViewNode;
 
@@ -55,7 +55,7 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                PropertiesWindow.showForObject(odmaFolder);
+                ObjectPropertiesDialog.showForObject(odmaFolder);
             }});
         treeContextMenu.add(menuItem);
         // build table context menu
@@ -64,7 +64,7 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                PropertiesWindow.showForObject(contextMenuItem.getContainable());
+                ObjectPropertiesDialog.showForObject(contextMenuItem.getContainable());
             }});
         tableContextMenu.add(menuItem);
         menuItem = new JMenuItem("Association Properties");
@@ -72,7 +72,7 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                PropertiesWindow.showForObject(contextMenuItem);
+                ObjectPropertiesDialog.showForObject(contextMenuItem);
             }});
         tableContextMenu.add(menuItem);
         // add content menu to view table

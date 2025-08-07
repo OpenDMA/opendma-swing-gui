@@ -28,7 +28,7 @@ class LabelButtonCellEditor extends AbstractCellEditor implements TableCellEdito
         button.setMargin(new Insets(0, 0, 0, 0));
         button.addActionListener(e -> {
             if (currentObject != null) {
-                PropertiesWindow.showForObject(currentObject);
+                ObjectPropertiesDialog.showForObject(currentObject);
             }
         });
         panel.add(label, BorderLayout.CENTER);

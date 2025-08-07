@@ -14,7 +14,7 @@ import org.opendma.api.OdmaFolder;
 import org.opendma.api.OdmaRepository;
 
 import com.xaldon.opendma.swingmanager.TableModelProvider;
-import com.xaldon.opendma.swingmanager.dialogs.PropertiesWindow;
+import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
 import com.xaldon.opendma.swingmanager.treemodel.ContextMenuNode;
 import com.xaldon.opendma.swingmanager.treemodel.IconNode;
 
@@ -40,7 +40,7 @@ public class RepositoryNode extends DefaultMutableTreeNode implements TableModel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                PropertiesWindow.showForObject(odmaRepository);
+                ObjectPropertiesDialog.showForObject(odmaRepository);
             }});
         contextMenu.add(menuItem);
     }

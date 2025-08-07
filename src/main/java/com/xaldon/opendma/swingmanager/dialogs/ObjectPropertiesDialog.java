@@ -34,7 +34,7 @@ import org.opendma.exceptions.OdmaPropertyNotFoundException;
 
 import com.xaldon.opendma.swingmanager.SpringUtilities;
 
-public class PropertiesWindow extends JFrame
+public class ObjectPropertiesDialog extends JFrame
 {
     
     private static final long serialVersionUID = -5209414514832674021L;
@@ -47,7 +47,7 @@ public class PropertiesWindow extends JFrame
     
     public static void showForObject(OdmaObject obj)
     {
-        new PropertiesWindow(obj);
+        new ObjectPropertiesDialog(obj);
     }
 
     private JPanel contentPane;
@@ -55,7 +55,7 @@ public class PropertiesWindow extends JFrame
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     @SuppressWarnings("serial")
-    private PropertiesWindow(OdmaObject obj)
+    private ObjectPropertiesDialog(OdmaObject obj)
     {
         super("Properties: "+obj.getId());
         // create content pane

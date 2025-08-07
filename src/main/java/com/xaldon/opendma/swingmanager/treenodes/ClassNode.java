@@ -26,7 +26,7 @@ import org.opendma.api.OdmaCommonNames;
 import org.opendma.api.OdmaPropertyInfo;
 
 import com.xaldon.opendma.swingmanager.TableModelProvider;
-import com.xaldon.opendma.swingmanager.dialogs.PropertiesWindow;
+import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
 import com.xaldon.opendma.swingmanager.treemodel.ContextMenuNode;
 import com.xaldon.opendma.swingmanager.treemodel.IconNode;
 import com.xaldon.opendma.swingmanager.treemodel.ViewNode;
@@ -61,7 +61,7 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                PropertiesWindow.showForObject(odmaClass);
+                ObjectPropertiesDialog.showForObject(odmaClass);
             }});
         treeContextMenu.add(menuItem);
         // build table context menu
@@ -70,7 +70,7 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                PropertiesWindow.showForObject(contextMenuItem);
+                ObjectPropertiesDialog.showForObject(contextMenuItem);
             }});
         tableContextMenu.add(menuItem);
         // add content menu to view table
