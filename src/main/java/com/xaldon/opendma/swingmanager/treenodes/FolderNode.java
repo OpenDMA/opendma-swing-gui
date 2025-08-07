@@ -59,20 +59,20 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
             }});
         treeContextMenu.add(menuItem);
         // build table context menu
+        menuItem = new JMenuItem("Object Properties");
+        menuItem.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                PropertiesWindow.showForObject(contextMenuItem.getContainable());
+            }});
+        tableContextMenu.add(menuItem);
         menuItem = new JMenuItem("Association Properties");
         menuItem.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 PropertiesWindow.showForObject(contextMenuItem);
-            }});
-        tableContextMenu.add(menuItem);
-        menuItem = new JMenuItem("Containment Properties");
-        menuItem.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                PropertiesWindow.showForObject(contextMenuItem.getContainable());
             }});
         tableContextMenu.add(menuItem);
         // add content menu to view table
