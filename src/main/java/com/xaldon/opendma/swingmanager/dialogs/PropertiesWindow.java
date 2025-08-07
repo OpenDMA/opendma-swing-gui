@@ -18,6 +18,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.opendma.api.OdmaContent;
 import org.opendma.api.OdmaObject;
 import org.opendma.api.OdmaProperty;
 import org.opendma.api.OdmaPropertyInfo;
@@ -94,7 +95,20 @@ public class PropertiesWindow extends JFrame
                 }
                 else
                 {
-                    return p.getValue();
+                    Object value = p.getValue();
+                    if(value == null)
+                    {
+                        return "<null>";
+                    }
+                    if(value instanceof OdmaObject)
+                    {
+                        return "[Object]";
+                    }
+                    if(value instanceof OdmaContent)
+                    {
+                        return "[Content]";
+                    }
+                    return value.toString();
                 }
             }};
         JTable propertiesTable = new JTable(tm);
