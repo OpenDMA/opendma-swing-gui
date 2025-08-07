@@ -13,14 +13,14 @@ import javax.swing.table.TableCellEditor;
 
 import org.opendma.api.OdmaObject;
 
-class LabelButtonCellEditor extends AbstractCellEditor implements TableCellEditor {
+class ObjectCellEditor extends AbstractCellEditor implements TableCellEditor {
     private static final long serialVersionUID = 1595892959171661928L;
     private JPanel panel;
     private JLabel label;
     private JButton button;
     private OdmaObject currentObject;
 
-    public LabelButtonCellEditor() {
+    public ObjectCellEditor() {
         panel = new JPanel(new BorderLayout());
         label = new JLabel();
         button = new JButton("...");

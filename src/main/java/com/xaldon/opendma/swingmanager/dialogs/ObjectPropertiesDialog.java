@@ -107,19 +107,15 @@ public class ObjectPropertiesDialog extends JFrame
                 else
                 {
                     Object value = p.getValue();
-                    if(p.isMultiValue()) {
-                        if(p.getType() == OdmaType.REFERENCE) {
-                            return "{ object set }";
-                        } else {
-                            return value.toString();
-                        }
-                    }
                     if(p.getType() == OdmaType.REFERENCE) {
                         return value;
                     }
                     if(value == null)
                     {
                         return "<null>";
+                    }
+                    if(p.isMultiValue()) {
+                        return value.toString();
                     }
                     switch(p.getType()) {
                     case STRING:
@@ -163,7 +159,7 @@ public class ObjectPropertiesDialog extends JFrame
                     return false;
                 }
                 OdmaProperty p = allProperties.get(rowIndex);
-                return !p.isMultiValue() && p.getType() == OdmaType.REFERENCE;
+                return p.getType() == OdmaType.REFERENCE;
             }
         };
         JTable propertiesTable = new JTable(tm) {
@@ -171,14 +167,14 @@ public class ObjectPropertiesDialog extends JFrame
             @Override
             public TableCellEditor getCellEditor(int row, int column) {
                 OdmaProperty p = allProperties.get(row);
-                if(p.isMultiValue()) {
-                    return super.getCellEditor(row, column);
-                } else {
-                    if(p.getType() == OdmaType.REFERENCE) {
-                        return new LabelButtonCellEditor();
+                if(p.getType() == OdmaType.REFERENCE) {
+                    if(p.isMultiValue()) {
+                        return new ObjectSetCellEditor(p.getName(), odmaObject.getId());
                     } else {
-                        return super.getCellEditor(row, column);
+                        return new ObjectCellEditor();
                     }
+                } else {
+                    return super.getCellEditor(row, column);
                 }
             }
             
@@ -188,18 +184,15 @@ public class ObjectPropertiesDialog extends JFrame
                     return super.getCellRenderer(row, column);
                 }
                 OdmaProperty p = allProperties.get(row);
-                if(p.isMultiValue()) {
-                    return super.getCellRenderer(row, column);
-                } else {
-                    if(p.getType() == OdmaType.REFERENCE) {
-                        return new DefaultTableCellRenderer() {
-                            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                                return  super.getTableCellRendererComponent(table, value==null?"<null>":"[Object] "+((OdmaObject)value).getId(), isSelected, hasFocus, row, column);
-                            };
+                if(p.getType() == OdmaType.REFERENCE) {
+                    boolean multiValue = p.isMultiValue();
+                    return new DefaultTableCellRenderer() {
+                        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                            return  super.getTableCellRendererComponent(table, multiValue?"{object set}":(value==null?"<null>":"[Object] "+((OdmaObject)value).getId()), isSelected, hasFocus, row, column);
                         };
-                    } else {
-                        return super.getCellRenderer(row, column);
-                    }
+                    };
+                } else {
+                    return super.getCellRenderer(row, column);
                 }
             }
 
@@ -245,7 +238,7 @@ public class ObjectPropertiesDialog extends JFrame
         closeButton.addActionListener(e -> dispose());
         buttonPanel.add(closeButton);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
-        setSize(300, 400);
+        setSize(500, 700);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = getSize();
         setLocation( ( screenSize.width - frameSize.width ) / 2, ( screenSize.height - frameSize.height ) / 2 );
