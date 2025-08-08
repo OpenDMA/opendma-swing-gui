@@ -7,18 +7,16 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.opendma.api.OdmaFolder;
 import org.opendma.api.OdmaRepository;
 
-import com.xaldon.opendma.swingmanager.TableModelProvider;
 import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
 import com.xaldon.opendma.swingmanager.treemodel.ContextMenuNode;
 import com.xaldon.opendma.swingmanager.treemodel.IconNode;
 
-public class RepositoryNode extends DefaultMutableTreeNode implements TableModelProvider, IconNode, ContextMenuNode
+public class RepositoryNode extends DefaultMutableTreeNode implements IconNode, ContextMenuNode
 {
     
     private static final long serialVersionUID = -8753719899842441268L;
@@ -84,11 +82,6 @@ public class RepositoryNode extends DefaultMutableTreeNode implements TableModel
     public String toString()
     {
         return odmaRepository.getDisplayName();
-    }
-
-    public TableModel getTableModel()
-    {
-        return null;
     }
 
 }

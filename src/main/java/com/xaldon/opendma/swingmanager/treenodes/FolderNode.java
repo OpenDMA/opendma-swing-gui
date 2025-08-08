@@ -22,12 +22,11 @@ import org.opendma.api.OdmaDocument;
 import org.opendma.api.OdmaFolder;
 import org.opendma.api.OdmaObject;
 
-import com.xaldon.opendma.swingmanager.TableModelProvider;
 import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
 import com.xaldon.opendma.swingmanager.treemodel.ContextMenuNode;
 import com.xaldon.opendma.swingmanager.treemodel.ViewNode;
 
-public class FolderNode extends DefaultMutableTreeNode implements TableModelProvider, ContextMenuNode, ViewNode
+public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNode, ViewNode
 {
     
     private static final long serialVersionUID = -4056310757313058899L;
@@ -115,7 +114,7 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
     
     public Component getViewComponent()
     {
-        viewComponent.setModel(getTableModel());
+        viewComponent.setModel(createTableModel());
         return viewComponent;
     }
     
@@ -154,7 +153,7 @@ public class FolderNode extends DefaultMutableTreeNode implements TableModelProv
     
     protected ArrayList<OdmaAssociation> associations;
 
-    public TableModel getTableModel()
+    protected TableModel createTableModel()
     {
         Iterable<OdmaAssociation> assocs = odmaFolder.getAssociations();
         associations = new ArrayList<OdmaAssociation>();

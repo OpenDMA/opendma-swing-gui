@@ -25,13 +25,12 @@ import org.opendma.api.OdmaClass;
 import org.opendma.api.OdmaCommonNames;
 import org.opendma.api.OdmaPropertyInfo;
 
-import com.xaldon.opendma.swingmanager.TableModelProvider;
 import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
 import com.xaldon.opendma.swingmanager.treemodel.ContextMenuNode;
 import com.xaldon.opendma.swingmanager.treemodel.IconNode;
 import com.xaldon.opendma.swingmanager.treemodel.ViewNode;
 
-public class ClassNode extends DefaultMutableTreeNode implements TableModelProvider, IconNode, ContextMenuNode, ViewNode
+public class ClassNode extends DefaultMutableTreeNode implements IconNode, ContextMenuNode, ViewNode
 {
     
     private static final long serialVersionUID = -4056310757313058899L;
@@ -112,7 +111,7 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
     
     public Component getViewComponent()
     {
-        viewComponent.setModel(getTableModel());
+        viewComponent.setModel(createTableModel());
         return viewComponent;
     }
     
@@ -173,7 +172,7 @@ public class ClassNode extends DefaultMutableTreeNode implements TableModelProvi
     
     protected ArrayList<OdmaPropertyInfo> propertyInfos;
     
-    public TableModel getTableModel()
+    protected TableModel createTableModel()
     {
         Iterable<OdmaPropertyInfo> declaredProperties = odmaClass.getDeclaredProperties();
         propertyInfos = new ArrayList<OdmaPropertyInfo>();
