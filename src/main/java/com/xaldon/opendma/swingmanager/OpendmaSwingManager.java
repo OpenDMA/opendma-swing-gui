@@ -181,25 +181,12 @@ public class OpendmaSwingManager extends JFrame
             public void valueChanged(TreeSelectionEvent e)
             {
                 Object o = tree.getLastSelectedPathComponent();
-                /*
-                if( (o != null) && (o instanceof TableModelProvider) )
-                {
-                    TableModel newModel = ((TableModelProvider)o).getTableModel();
-                    if(newModel != null)
-                    {
-                        table.setModel(newModel);
-                    }
-                }
-                */
                 Component viewComponent = null;
                 if( (o != null) && (o instanceof ViewNode) )
                 {
                     viewComponent = ((ViewNode)o).getViewComponent();
                 }
                 viewScrollPane.setViewportView( (viewComponent != null) ? viewComponent : emptyViewComponent );
-                //int divLoc = splitPane.getDividerLocation();
-                //splitPane.setRightComponent( (viewComponent != null) ? viewComponent : emptyViewComponent );
-                //splitPane.setDividerLocation(divLoc);
             }});
         // add content menu to tree and table
         MouseListener popupListener = new MouseAdapter(){
@@ -226,7 +213,6 @@ public class OpendmaSwingManager extends JFrame
                 }
                 if (e.isPopupTrigger())
                 {
-                    //popup.show(e.getComponent(), e.getX(), e.getY());
                     Object o = tree.getLastSelectedPathComponent();
                     if( (o != null) && (o instanceof ContextMenuNode) )
                     {
@@ -239,7 +225,6 @@ public class OpendmaSwingManager extends JFrame
         tree.addMouseListener(popupListener);
         // create SplitPane between tree and table
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, viewScrollPane);
-        //splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, tableScrollPane);
         splitPane.setOneTouchExpandable(false);
         splitPane.setDividerLocation(250);
         splitPane.setResizeWeight(0.5);
