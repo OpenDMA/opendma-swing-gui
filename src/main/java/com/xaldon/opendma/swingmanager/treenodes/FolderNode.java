@@ -210,46 +210,8 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
             public Object getValueAt(int rowIndex, int columnIndex)
             {
                 return data[rowIndex][columnIndex];
-                /*
-                OdmaAssociation assoc = (OdmaAssociation)lst.get(rowIndex);
-                switch(columnIndex)
-                {
-                case 0:
-                    return assoc.getName();
-                case 1:
-                    return assoc.getContainment().getOdmaClass().getQName();
-                case 2:
-                    return assoc.getCreatedAt();
-                case 3:
-                    return assoc.getCreatedBy();
-                case 4:
-                    return assoc.getContainment().getId();
-                default:
-                    OdmaObject containment = assoc.getContainment();
-                    if(containment instanceof OdmaDocument)
-                    {
-                        OdmaDocument doc = (OdmaDocument)containment;
-                        switch(columnIndex)
-                        {
-                        case 5:
-                            return doc.getTitle();
-                        case 6:
-                            return doc.getVersion();
-                        case 7:
-                            return doc.getCombinedMimeType();
-                        case 8:
-                            return doc.getCheckedOut();
-                        default:
-                            return "";
-                        }
-                    }
-                    else
-                    {
-                        return "";
-                    }
-                }
-                */
-            }};
+            }
+        };
     }
 
 }
