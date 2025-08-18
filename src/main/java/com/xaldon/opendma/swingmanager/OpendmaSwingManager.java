@@ -29,6 +29,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.opendma.api.OdmaAdaptor;
 import org.opendma.api.OdmaAdaptorDiscovery;
 import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaRepository;
@@ -117,9 +118,15 @@ public class OpendmaSwingManager extends JFrame
                 }
             }
             System.out.println("Setting up session with adaptor "+adaptorId+"...");
+            OdmaAdaptor adaptor = adaptorDiscovery.getAdaptor(adaptorId);
+            if(adaptor == null)
+            {
+                System.err.println("No suitable adaptor found with this id.");
+                return;
+            }
             try
             {
-                OdmaSession session = adaptorDiscovery.getAdaptor(adaptorId).connect(adaptorProps);
+                OdmaSession session = adaptor.connect(adaptorProps);
                 System.out.println("Retrieving repository "+repoId+"...");
                 OdmaRepository repo = session.getRepository(new OdmaId(repoId));
                 repos.add(repo);
