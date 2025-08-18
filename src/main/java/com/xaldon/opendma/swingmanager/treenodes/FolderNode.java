@@ -52,6 +52,7 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
     {
         odmaFolder = folder;
         tableView = new JTable();
+        tableView .setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         scrollView = new JScrollPane(tableView);
         // build tree context menu
         JMenuItem menuItem = new JMenuItem("Properties");

@@ -58,6 +58,7 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
     {
         odmaClass = cls;
         tableView = new JTable();
+        tableView .setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         scrollView = new JScrollPane(tableView);
         // build tree context menu
         JMenuItem menuItem = new JMenuItem("Properties");
