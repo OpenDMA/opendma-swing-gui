@@ -73,7 +73,7 @@ public class OpendmaSwingManager extends JFrame
 			return;
 		}
 		// setup
-		ArrayList<OdmaRepository> repos = new ArrayList<OdmaRepository>();
+		ArrayList<RepoData> repos = new ArrayList<RepoData>();
 		String countStr = cfg.getProperty("count");
 		if(countStr == null)
 		{
@@ -129,8 +129,13 @@ public class OpendmaSwingManager extends JFrame
 			{
 				OdmaSession session = adaptor.connect(adaptorProps);
 				System.out.println("Retrieving repository "+repoId+"...");
-				OdmaRepository repo = session.getRepository(new OdmaId(repoId));
-				repos.add(repo);
+				OdmaId rid = new OdmaId(repoId);
+				OdmaRepository repo = session.getRepository(rid);
+				RepoData rd = new RepoData();
+				rd.session =  session;
+				rd.repoId = rid;
+				rd.repo = repo;
+				repos.add(rd);
 			}
 			catch (OdmaException e)
 			{
@@ -144,11 +149,18 @@ public class OpendmaSwingManager extends JFrame
 		new OpendmaSwingManager(repos);
 	}
 	
+	private static class RepoData
+	{
+	    OdmaSession  session;
+	    OdmaId repoId;
+	    OdmaRepository repo;
+	}
+	
 	protected JSplitPane splitPane;
 	
 	protected JPanel emptyViewComponent = new JPanel();
 	
-	public OpendmaSwingManager(List<OdmaRepository> repositories)
+	public OpendmaSwingManager(List<RepoData> repositories)
 	{
 		// set the title of this Window
 		super("OpenDMA Swing Manager");
@@ -170,9 +182,9 @@ public class OpendmaSwingManager extends JFrame
 		});
 		// create the tree
 		DefaultMutableTreeNode rootNode = new ServersNode();
-		for(OdmaRepository repo : repositories)
+		for(RepoData rd : repositories)
 		{
-			rootNode.add(new RepositoryNode(repo));
+			rootNode.add(new RepositoryNode(rd.session, rd.repoId, rd.repo));
 		}
 		final JTree tree = new JTree(rootNode);
 		tree.setCellRenderer(new IconNodeRenderer());

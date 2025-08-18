@@ -10,7 +10,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.opendma.api.OdmaFolder;
+import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaRepository;
+import org.opendma.api.OdmaSession;
 
 import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
 import com.xaldon.opendma.swingmanager.treemodel.ContextMenuNode;
@@ -21,6 +23,10 @@ public class RepositoryNode extends DefaultMutableTreeNode implements IconNode, 
     
     private static final long serialVersionUID = -8753719899842441268L;
 
+    protected OdmaSession odmaSession;
+
+    protected OdmaId repoId;
+
     protected OdmaRepository odmaRepository;
     
     protected boolean childrenCreated = false;
@@ -29,8 +35,10 @@ public class RepositoryNode extends DefaultMutableTreeNode implements IconNode, 
     
     protected JPopupMenu contextMenu = new JPopupMenu();
     
-    public RepositoryNode(OdmaRepository repository)
+    public RepositoryNode(OdmaSession session, OdmaId repoId, OdmaRepository repository)
     {
+        this.odmaSession = session;
+        this.repoId = repoId;
         this.odmaRepository = repository;
         // build context menu
         JMenuItem menuItem = new JMenuItem("Properties");
@@ -72,6 +80,7 @@ public class RepositoryNode extends DefaultMutableTreeNode implements IconNode, 
         childrenCreated = true;
         add(new ClassNode(odmaRepository.getRootClass()));
         add(new RootAspectsNode(odmaRepository.getRootAspects()));
+        add(new SearchNode(odmaSession, repoId));
         OdmaFolder rootFolder = odmaRepository.getRootFolder();
         if(rootFolder != null)
         {
