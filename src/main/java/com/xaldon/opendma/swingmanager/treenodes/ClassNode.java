@@ -16,6 +16,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -47,13 +48,17 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
     
     protected JPopupMenu tableContextMenu = new JPopupMenu();
     
-    protected JTable viewComponent = new JTable();
+    protected JTable tableView;
+    
+    protected JScrollPane scrollView;
     
     protected OdmaPropertyInfo contextMenuItem;
     
     public ClassNode(OdmaClass cls)
     {
-        this.odmaClass = cls;
+        odmaClass = cls;
+        tableView = new JTable();
+        scrollView = new JScrollPane(tableView);
         // build tree context menu
         JMenuItem menuItem = new JMenuItem("Properties");
         menuItem.addActionListener(new ActionListener(){
@@ -90,13 +95,13 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
                 {
                     return;
                 }
-                int row = viewComponent.rowAtPoint(new Point(e.getX(), e.getY()));
-                viewComponent.getSelectionModel().setSelectionInterval(row,row);
+                int row = tableView.rowAtPoint(new Point(e.getX(), e.getY()));
+                tableView.getSelectionModel().setSelectionInterval(row,row);
                 contextMenuItem = propertyInfos.get(row);
                 tableContextMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         };
-        viewComponent.addMouseListener(popupListener);
+        tableView.addMouseListener(popupListener);
     }
     
     public Icon getIcon()
@@ -111,8 +116,8 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
     
     public Component getViewComponent()
     {
-        viewComponent.setModel(createTableModel());
-        return viewComponent;
+        tableView.setModel(createTableModel());
+        return scrollView;
     }
     
     protected Boolean isAspectCache;

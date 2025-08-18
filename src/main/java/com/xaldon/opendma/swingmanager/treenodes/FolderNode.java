@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -41,13 +42,17 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
     
     protected JPopupMenu tableContextMenu = new JPopupMenu();
     
-    protected JTable viewComponent = new JTable();
+    protected JTable tableView;
+    
+    protected JScrollPane scrollView;
     
     protected OdmaAssociation contextMenuItem;
     
     public FolderNode(OdmaFolder folder)
     {
-        this.odmaFolder = folder;
+        odmaFolder = folder;
+        tableView = new JTable();
+        scrollView = new JScrollPane(tableView);
         // build tree context menu
         JMenuItem menuItem = new JMenuItem("Properties");
         menuItem.addActionListener(new ActionListener(){
@@ -92,13 +97,13 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
                 {
                     return;
                 }
-                int row = viewComponent.rowAtPoint(new Point(e.getX(), e.getY()));
-                viewComponent.getSelectionModel().setSelectionInterval(row,row);
+                int row = tableView.rowAtPoint(new Point(e.getX(), e.getY()));
+                tableView.getSelectionModel().setSelectionInterval(row,row);
                 contextMenuItem = associations.get(row);
                 tableContextMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         };
-        viewComponent.addMouseListener(popupListener);
+        tableView.addMouseListener(popupListener);
     }
     
     public FolderNode(OdmaFolder folder, String name)
@@ -114,8 +119,8 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
     
     public Component getViewComponent()
     {
-        viewComponent.setModel(createTableModel());
-        return viewComponent;
+        tableView.setModel(createTableModel());
+        return scrollView;
     }
     
     public boolean isLeaf()
