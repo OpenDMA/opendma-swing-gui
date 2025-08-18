@@ -8,7 +8,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -29,9 +33,13 @@ import javax.swing.table.TableModel;
 import org.opendma.api.OdmaCommonNames;
 import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaObject;
+import org.opendma.api.OdmaProperty;
+import org.opendma.api.OdmaProperty.PropertyResolutionState;
 import org.opendma.api.OdmaQName;
 import org.opendma.api.OdmaSearchResult;
 import org.opendma.api.OdmaSession;
+import org.opendma.api.OdmaType;
+import org.opendma.exceptions.OdmaPropertyNotFoundException;
 
 import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
 
@@ -39,6 +47,10 @@ public class SearchView extends JPanel
 {
 
     private static final long serialVersionUID = -4421432551832213653L;
+    
+    protected final static int MAX_RESULT_SET = 5000;
+    
+    protected final static String[] FIXED_COLUMN_NAMES = { "ID", "Class" };
 
     protected OdmaSession session;
     
@@ -52,8 +64,12 @@ public class SearchView extends JPanel
     protected JPopupMenu tableContextMenu = new JPopupMenu();
     
     protected ArrayList<OdmaObject> resultSet = new ArrayList<OdmaObject>(0);
+
+    protected LinkedList<OdmaQName> extraColumns = null;
     
     protected OdmaObject contextMenuItem;
+    
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     
     public SearchView(OdmaSession session, OdmaId repoId)
     {
@@ -78,6 +94,7 @@ public class SearchView extends JPanel
         
         // Create results table
         resultsTable = new JTable();
+        resultsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         JScrollPane tableScrollPane = new JScrollPane(resultsTable);
         tableScrollPane.setBorder(BorderFactory.createTitledBorder("Search Results"));
         
@@ -146,6 +163,7 @@ public class SearchView extends JPanel
         languageComboBox = new JComboBox<OdmaQName>();
         languageComboBox.setModel(new DefaultComboBoxModel<OdmaQName>(
             new OdmaQName[] {
+                    new OdmaQName("cmod", "sql"),
                     new OdmaQName("opendma", "json-simple")
             }
         ));
@@ -160,13 +178,12 @@ public class SearchView extends JPanel
         return toolbar;
     }
     
-    private final static int MAX_RESULT_SET = 5000;
-    
     protected void performSearch()
     {
         String query = searchTextArea.getText();
         OdmaQName language = (OdmaQName) languageComboBox.getSelectedItem();
         resultSet.clear();
+        extraColumns = null;
         try
         {
             OdmaSearchResult result = session.search(repoId, language, query);
@@ -176,6 +193,14 @@ public class SearchView extends JPanel
                 o.prepareProperties(new OdmaQName[] {OdmaCommonNames.PROPERTY_ID,OdmaCommonNames.PROPERTY_CLASS}, false);
                 o.getOdmaClass().prepareProperties(new OdmaQName[] {OdmaCommonNames.PROPERTY_NAMESPACE,OdmaCommonNames.PROPERTY_NAME}, false);
                 resultSet.add(o);
+                if(extraColumns == null)
+                {
+                    extraColumns = getDisplayablePropertyNames(o);
+                }
+                else
+                {
+                    extraColumns.retainAll(getDisplayablePropertyNames(o));
+                }
                 if(resultSet.size() >= MAX_RESULT_SET)
                 {
                     break;
@@ -195,8 +220,6 @@ public class SearchView extends JPanel
         resultsTable.setModel(createTableModel());
     }
     
-    public static String[] columnNames = { "ID", "Class" };
-    
     protected TableModel createTableModel()
     {
         return new AbstractTableModel(){
@@ -210,12 +233,19 @@ public class SearchView extends JPanel
 
             public String getColumnName(int col)
             {
-                return columnNames[col];
+                if(col < FIXED_COLUMN_NAMES.length)
+                {
+                    return FIXED_COLUMN_NAMES[col];
+                }
+                else
+                {
+                    return extraColumns.get(col-FIXED_COLUMN_NAMES.length).toString();
+                }
             }
 
             public int getColumnCount()
             {
-                return columnNames.length;
+                return FIXED_COLUMN_NAMES.length + extraColumns.size();
             }
 
             public Object getValueAt(int rowIndex, int columnIndex)
@@ -231,10 +261,65 @@ public class SearchView extends JPanel
                 }
                 else
                 {
-                    return "--";
+                    OdmaQName propName = extraColumns.get(columnIndex-FIXED_COLUMN_NAMES.length);
+                    try
+                    {
+                        OdmaProperty prop = obj.getProperty(propName);
+                        if(prop.getValue() == null)
+                        {
+                            return "<null>";
+                        }
+                        if(prop.getType() == OdmaType.DATETIME)
+                        {
+                            return dateFormat.format((Date)prop.getValue());
+                        }
+                        else
+                        {
+                            return prop.getValue().toString();
+                        }
+                    }
+                    catch (OdmaPropertyNotFoundException e)
+                    {
+                        return "--";
+                    }
                 }
             }
         };
+    }
+    
+    protected LinkedList<OdmaQName> getDisplayablePropertyNames(OdmaObject obj)
+    {
+        LinkedList<OdmaQName> result = new LinkedList<OdmaQName>();
+        Iterator<OdmaProperty> itProp = obj.availableProperties();
+        while(itProp.hasNext())
+        {
+            OdmaProperty prop = itProp.next();
+            if(prop.getResolutionState() == PropertyResolutionState.UNRESOLVED)
+            {
+                continue;
+            }
+            if(prop.getName().equals(OdmaCommonNames.PROPERTY_ID) || prop.getName().equals(OdmaCommonNames.PROPERTY_GUID))
+            {
+                continue;
+            }
+            switch(prop.getType())
+            {
+            case STRING:
+            case INTEGER:
+            case SHORT:
+            case LONG:
+            case FLOAT:
+            case DOUBLE:
+            case BOOLEAN:
+            case DATETIME:
+            case ID:
+            case GUID:
+                result.add(prop.getName());
+            default:
+                break;
+            }
+        }
+        return result;
     }
 
 } 
