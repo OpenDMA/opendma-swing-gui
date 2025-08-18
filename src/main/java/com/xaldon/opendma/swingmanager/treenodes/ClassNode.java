@@ -40,9 +40,9 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
     
     protected boolean childrenCreated = false;
     
-    protected static Icon classIcon = new ImageIcon("class_obj.gif");
+    protected static Icon classIcon = new ImageIcon(ClassNode.class.getResource("/icons/class_obj.gif"));
     
-    protected static Icon aspectIcon = new ImageIcon("aspect.png");
+    protected static Icon aspectIcon = new ImageIcon(ClassNode.class.getResource("/icons/aspect.png"));
     
     protected JPopupMenu treeContextMenu = new JPopupMenu();
     

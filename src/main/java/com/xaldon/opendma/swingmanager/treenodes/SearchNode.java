@@ -18,7 +18,7 @@ public class SearchNode extends DefaultMutableTreeNode implements IconNode, View
 
     private static final long serialVersionUID = 2499149520054813615L;
     
-    protected static Icon searchIcon = new ImageIcon("magnifier.png");
+    protected static Icon searchIcon = new ImageIcon(SearchNode.class.getResource("/icons/magnifier.png"));
     
     protected SearchView searchView;
     

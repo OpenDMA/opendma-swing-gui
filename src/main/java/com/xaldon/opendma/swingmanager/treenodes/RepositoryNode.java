@@ -31,7 +31,7 @@ public class RepositoryNode extends DefaultMutableTreeNode implements IconNode, 
     
     protected boolean childrenCreated = false;
     
-    protected static Icon repositoryIcon = new ImageIcon("database.png");
+    protected static Icon repositoryIcon = new ImageIcon(RepositoryNode.class.getResource("/icons/database.png"));
     
     protected JPopupMenu contextMenu = new JPopupMenu();
     

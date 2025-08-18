@@ -19,7 +19,7 @@ public class RootAspectsNode extends DefaultMutableTreeNode implements IconNode
     
     protected boolean childrenCreated = false;
     
-    protected static Icon aspectIcon = new ImageIcon("aspect.png");
+    protected static Icon aspectIcon = new ImageIcon(RootAspectsNode.class.getResource("/icons/aspect.png"));
     
     public RootAspectsNode(Iterable<OdmaClass> aspects)
     {
