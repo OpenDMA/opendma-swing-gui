@@ -2,6 +2,7 @@ package com.xaldon.opendma.swingmanager.treenodes;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -11,6 +12,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.opendma.api.OdmaFolder;
 import org.opendma.api.OdmaId;
+import org.opendma.api.OdmaQName;
 import org.opendma.api.OdmaRepository;
 import org.opendma.api.OdmaSession;
 
@@ -80,7 +82,11 @@ public class RepositoryNode extends DefaultMutableTreeNode implements IconNode, 
         childrenCreated = true;
         add(new ClassNode(odmaRepository.getRootClass()));
         add(new RootAspectsNode(odmaRepository.getRootAspects()));
-        add(new SearchNode(odmaSession, repoId));
+        List<OdmaQName> supportedQueryLanguages = odmaSession.getSupportedQueryLanguages();
+        if(supportedQueryLanguages != null && supportedQueryLanguages.size() > 0)
+        {
+            add(new SearchNode(odmaSession, repoId));
+        }
         OdmaFolder rootFolder = odmaRepository.getRootFolder();
         if(rootFolder != null)
         {

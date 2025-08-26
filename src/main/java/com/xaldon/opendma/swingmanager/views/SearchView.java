@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -161,12 +162,9 @@ public class SearchView extends JPanel
         
         // Language selection combo box
         languageComboBox = new JComboBox<OdmaQName>();
-        languageComboBox.setModel(new DefaultComboBoxModel<OdmaQName>(
-            new OdmaQName[] {
-                    new OdmaQName("cmod", "sql"),
-                    new OdmaQName("opendma", "json-simple")
-            }
-        ));
+        List<OdmaQName> supportedQueryLanguages = session.getSupportedQueryLanguages();
+        
+        languageComboBox.setModel(new DefaultComboBoxModel<OdmaQName>(supportedQueryLanguages.toArray(new OdmaQName[supportedQueryLanguages.size()])));
         languageComboBox.setPreferredSize(new Dimension(200, languageComboBox.getPreferredSize().height));
         languageComboBox.setMaximumSize(languageComboBox.getPreferredSize());
         
