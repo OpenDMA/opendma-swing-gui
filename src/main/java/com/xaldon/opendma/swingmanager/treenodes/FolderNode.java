@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.swing.JMenuItem;
@@ -23,8 +24,10 @@ import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.opendma.api.OdmaAssociation;
+import org.opendma.api.OdmaContainable;
 import org.opendma.api.OdmaDocument;
 import org.opendma.api.OdmaFolder;
+import org.opendma.api.OdmaId;
 import org.opendma.api.OdmaObject;
 
 import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
@@ -35,6 +38,8 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
 {
     
     private static final long serialVersionUID = -4056310757313058899L;
+
+    private static final int MAX_LIST_SIZE = 10000;
 
     protected OdmaFolder odmaFolder;
     
@@ -50,7 +55,7 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
     
     protected JScrollPane scrollView;
     
-    protected OdmaAssociation contextMenuItem;
+    protected ListEntry contextMenuItem;
     
     private boolean columnModelSet = false;
     
@@ -79,7 +84,7 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                ObjectPropertiesDialog.showForObject(contextMenuItem.getContainable());
+                ObjectPropertiesDialog.showForObject(contextMenuItem.containable);
             }});
         tableContextMenu.add(menuItem);
         menuItem = new JMenuItem("Association Properties");
@@ -87,7 +92,10 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                ObjectPropertiesDialog.showForObject(contextMenuItem);
+                if(contextMenuItem.association != null)
+                {
+                    ObjectPropertiesDialog.showForObject(contextMenuItem.association);
+                }
             }});
         tableContextMenu.add(menuItem);
         // add content menu to view table
@@ -110,7 +118,7 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
                 }
                 int row = tableView.rowAtPoint(new Point(e.getX(), e.getY()));
                 tableView.getSelectionModel().setSelectionInterval(row,row);
-                contextMenuItem = associations.get(row);
+                contextMenuItem = listEntries.get(row);
                 tableContextMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         };
@@ -215,30 +223,61 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
     
     public String[] columnNames = { "Name", "Class", "FiledOn", "FiledBy", "Id", "Title", "Version", "MimeType", "CheckedOut" };
     
-    protected ArrayList<OdmaAssociation> associations;
+    private class ListEntry
+    {
+        OdmaAssociation association;
+        OdmaObject containable;
+    }
+    
+    protected ArrayList<ListEntry> listEntries;
 
     protected TableModel createTableModel()
     {
-        Iterable<OdmaAssociation> assocs = odmaFolder.getAssociations();
-        associations = new ArrayList<OdmaAssociation>();
-        Iterator<OdmaAssociation> it = assocs.iterator();
-        while(it.hasNext())
+        listEntries = new ArrayList<ListEntry>();
+        HashSet<OdmaId> containeesInList = new HashSet<OdmaId>();
+        for(OdmaAssociation assoc : odmaFolder.getAssociations())
         {
-            associations.add((OdmaAssociation)it.next());
-        }
-        final Object data[][] = new Object[associations.size()][columnNames.length];
-        for(int i = 0; i < associations.size(); i++)
-        {
-            OdmaAssociation assoc = associations.get(i);
-            OdmaObject containment = assoc.getContainable();
-            data[i][0] = assoc.getName();
-            data[i][1] = containment.getOdmaClass().getQName();
-            data[i][2] = assoc.getCreatedAt();
-            data[i][3] = assoc.getCreatedBy();
-            data[i][4] = containment.getId();
-            if(containment instanceof OdmaDocument)
+            ListEntry entry = new ListEntry();
+            entry.association = assoc;
+            entry.containable = assoc.getContainable();
+            containeesInList.add(entry.containable.getId());
+            listEntries.add(entry);
+            if(listEntries.size() >= MAX_LIST_SIZE)
             {
-                OdmaDocument doc = (OdmaDocument)containment;
+                break;
+            }
+        }
+        if(listEntries.size() < MAX_LIST_SIZE)
+        {
+            for(OdmaContainable cont : odmaFolder.getContainees())
+            {
+                if(containeesInList.contains(cont.getId()))
+                {
+                    continue;
+                }
+                ListEntry entry = new ListEntry();
+                entry.association = null;
+                entry.containable = cont;
+                containeesInList.add(cont.getId());
+                listEntries.add(entry);
+                if(listEntries.size() >= MAX_LIST_SIZE)
+                {
+                    break;
+                }
+            }
+        }
+        final Object data[][] = new Object[listEntries.size()][columnNames.length];
+        for(int i = 0; i < listEntries.size(); i++)
+        {
+            ListEntry entry = listEntries.get(i);
+            data[i][0] = entry.association == null ? "" : entry.association.getName();
+            data[i][1] = entry.containable.getOdmaClass().getQName();
+            data[i][2] = entry.association == null ? "" : entry.association.getCreatedAt();
+            data[i][3] = entry.association == null ? "" : entry.association.getCreatedBy();
+            data[i][4] = entry.containable.getId();
+            if(entry.containable instanceof OdmaDocument)
+            {
+                OdmaDocument doc = (OdmaDocument)entry.containable;
                 data[i][5] = doc.getTitle();
                 data[i][6] = doc.getVersion();
                 data[i][7] = doc.getCombinedContentType();
