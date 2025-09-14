@@ -18,6 +18,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -53,6 +57,12 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
     protected JScrollPane scrollView;
     
     protected OdmaPropertyInfo contextMenuItem;
+    
+    private boolean columnModelSet = false;
+    
+    private boolean ignoreColumnChanges = false;
+    
+    protected static int[] columnWidth;
     
     public ClassNode(OdmaClass cls)
     {
@@ -103,6 +113,43 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
             }
         };
         tableView.addMouseListener(popupListener);
+        tableView.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
+            @Override
+            public void columnAdded(TableColumnModelEvent e) {
+                // No action needed for column addition
+            }
+
+            @Override
+            public void columnRemoved(TableColumnModelEvent e) {
+                // No action needed for column removal
+            }
+
+            @Override
+            public void columnMoved(TableColumnModelEvent e) {
+                // No action needed for column movement
+            }
+
+            @Override
+            public void columnMarginChanged(ChangeEvent e) {
+                if(ignoreColumnChanges) {
+                    return;
+                }
+                int columnCount = tableView.getColumnModel().getColumnCount();
+                if(columnWidth == null || columnWidth.length != columnCount) {
+                    columnWidth = new int[columnCount];
+                }
+                for (int i = 0; i < columnCount; i++) {
+                    int width = tableView.getColumnModel().getColumn(i).getWidth();
+                    columnWidth[i] = width;
+                    System.out.println("Column " + i + " width changed to: " + width);
+                }
+            }
+
+            @Override
+            public void columnSelectionChanged(ListSelectionEvent e) {
+                // No action needed for column selection changes
+            }
+        });
     }
     
     public Icon getIcon()
@@ -117,7 +164,18 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
     
     public Component getViewComponent()
     {
-        tableView.setModel(createTableModel());
+        if(!columnModelSet) {
+            tableView.setModel(createTableModel());
+            columnModelSet = true;
+        }
+        int columnCount = tableView.getColumnModel().getColumnCount();
+        if(columnWidth != null && columnWidth.length == columnCount) {
+            ignoreColumnChanges = true;
+            for (int i = 0; i < columnCount; i++) {
+                tableView.getColumnModel().getColumn(i).setPreferredWidth(columnWidth[i]);
+            }
+            ignoreColumnChanges = false;
+        }
         return scrollView;
     }
     
