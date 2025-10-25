@@ -151,7 +151,6 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
                 for (int i = 0; i < columnCount; i++) {
                     int width = tableView.getColumnModel().getColumn(i).getWidth();
                     columnWidth[i] = width;
-                    System.out.println("Column " + i + " width changed to: " + width);
                 }
             }
 
