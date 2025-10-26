@@ -129,7 +129,7 @@ public class ObjectPropertiesDialog extends JFrame
                         return ((Boolean)value).booleanValue() ? "TRUE" : "FALSE";
                     case DATETIME:
                         return dateFormat.format((Date)value);
-                    case BLOB:
+                    case BINARY:
                         byte[] bytes = (byte[])value;
                         String result = bytes.length + " bytes.";
                         for(int i = 0; i < Math.max(bytes.length, 10); i++) {
