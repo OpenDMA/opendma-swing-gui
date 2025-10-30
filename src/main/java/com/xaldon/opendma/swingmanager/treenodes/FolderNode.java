@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -24,6 +25,7 @@ import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.opendma.api.OdmaAssociation;
+import org.opendma.api.OdmaAuditStamped;
 import org.opendma.api.OdmaContainable;
 import org.opendma.api.OdmaDocument;
 import org.opendma.api.OdmaFolder;
@@ -269,10 +271,41 @@ public class FolderNode extends DefaultMutableTreeNode implements ContextMenuNod
         for(int i = 0; i < listEntries.size(); i++)
         {
             ListEntry entry = listEntries.get(i);
-            data[i][0] = entry.association == null ? "" : entry.association.getName();
+            String name;
+            if(entry.association != null && entry.association.getName() != null && !entry.association.getName().trim().isEmpty())
+            {
+                name = entry.association.getName();
+            }
+            else if(entry.containable instanceof OdmaDocument)
+            {
+                name = ((OdmaDocument)entry.containable).getTitle();
+            }
+            else
+            {
+                name = entry.containable.getId().toString();
+            }
+            Date createdAt;
+            String createdBy;
+            if(entry.association instanceof OdmaAuditStamped)
+            {
+                createdAt = ((OdmaAuditStamped)entry.association).getCreatedAt();
+                createdBy = ((OdmaAuditStamped)entry.association).getCreatedBy();
+            }
+            else if(entry.containable instanceof OdmaAuditStamped)
+            {
+                createdAt = ((OdmaAuditStamped)entry.containable).getCreatedAt();
+                createdBy = ((OdmaAuditStamped)entry.containable).getCreatedBy();
+            }
+            else
+            {
+                createdAt = null;
+                createdBy = null;
+            }
+            
+            data[i][0] = name;
             data[i][1] = entry.containable.getOdmaClass().getQName();
-            data[i][2] = entry.association == null ? "" : entry.association.getCreatedAt();
-            data[i][3] = entry.association == null ? "" : entry.association.getCreatedBy();
+            data[i][2] = createdAt == null ? "" : createdAt;
+            data[i][3] = createdBy == null ? "" : createdBy;
             data[i][4] = entry.containable.getId();
             if(entry.containable instanceof OdmaDocument)
             {
