@@ -1,0 +1,59 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 https://maven.apache.org/xsd/assembly-1.1.3.xsd">
+
+  <id>dist</id>
+
+  <formats>
+    <format>zip</format>
+  </formats>
+
+  <includeBaseDirectory>true</includeBaseDirectory>
+
+  <fileSets>
+    <fileSet>
+      <directory>src/main/dist</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>run.sh</include>
+        <include>run.bat</include>
+      </includes>
+      <!-- Make run.sh executable inside the zip -->
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/dist</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>SampleRepository.xml</include>
+        <include>sample-content.bin</include>
+        <include>opendma-swing-gui.properties</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>.</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>LICENSE</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/adaptors</directory>
+      <outputDirectory>adaptors</outputDirectory>
+      <includes>
+        <include>**/*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
+    </dependencySet>
+  </dependencySets>
+
+</assembly>
