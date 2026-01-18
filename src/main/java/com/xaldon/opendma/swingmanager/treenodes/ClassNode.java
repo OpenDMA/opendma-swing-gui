@@ -8,9 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -29,6 +27,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.opendma.api.OdmaClass;
 import org.opendma.api.OdmaCommonNames;
 import org.opendma.api.OdmaPropertyInfo;
+import org.opendma.api.OdmaType;
 
 import com.xaldon.opendma.swingmanager.dialogs.ObjectPropertiesDialog;
 import com.xaldon.opendma.swingmanager.treemodel.ContextMenuNode;
@@ -251,8 +250,16 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
             data[i][0] = pi.getQName().toString();
             data[i][1] = pi.getDisplayName();
             Integer dataType = pi.getDataType();
-            String dataTypeDisplay = (String)datatypeValues.get(dataType);
-            data[i][2] = dataTypeDisplay != null ? dataTypeDisplay : "Unknown ("+dataType.toString()+")";
+            String dataTypeDisplay;
+            try
+            {
+                dataTypeDisplay = OdmaType.fromNumericId(dataType).toString();
+            }
+            catch(IllegalArgumentException iae)
+            {
+                dataTypeDisplay = "unknown ("+dataType.toString()+")";
+            }
+            data[i][2] = dataTypeDisplay;
             data[i][3] = pi.isMultiValue();
             data[i][4] = pi.isRequired();
             data[i][5] = pi.isReadOnly();
@@ -267,7 +274,6 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
 
             public int getRowCount()
             {
-                // return lst.size();
                 return data.length;
             }
 
@@ -284,55 +290,7 @@ public class ClassNode extends DefaultMutableTreeNode implements IconNode, Conte
             public Object getValueAt(int rowIndex, int columnIndex)
             {
                 return data[rowIndex][columnIndex];
-                /*
-                OdmaPropertyInfo pi = (OdmaPropertyInfo)lst.get(rowIndex);
-                switch(columnIndex)
-                {
-                case 0:
-                    return pi.getQName().toString();
-                case 1:
-                    return pi.getDisplayName();
-                case 2:
-                    Integer dataType = pi.getDataType();
-                    String dataTypeDisplay = (String)datatypeValues.get(dataType);
-                    return dataTypeDisplay != null ? dataTypeDisplay : "Unknown ("+dataType.toString()+")";
-                case 3:
-                    return pi.getMultiValue();
-                case 4:
-                    return pi.getRequired();
-                case 5:
-                    return pi.getReadOnly();
-                case 6:
-                    return pi.getHidden();
-                case 7:
-                    OdmaClass referenceClass = pi.getReferenceClass();
-                    return referenceClass == null ? null : referenceClass.getQName();
-                case 8:
-                    return pi.getId();
-                default:
-                    return "";
-                }
-                */
             }};
-    }
-
-    protected static Map<Integer, String> datatypeValues = new HashMap<Integer, String>();
-    
-    static
-    {
-        datatypeValues.put(new Integer(1),"string");
-        datatypeValues.put(new Integer(2),"integer");
-        datatypeValues.put(new Integer(3),"short");
-        datatypeValues.put(new Integer(4),"long");
-        datatypeValues.put(new Integer(5),"float");
-        datatypeValues.put(new Integer(6),"double");
-        datatypeValues.put(new Integer(7),"boolean");
-        datatypeValues.put(new Integer(8),"datetime");
-        datatypeValues.put(new Integer(9),"blob");
-        datatypeValues.put(new Integer(10),"reference");
-        datatypeValues.put(new Integer(11),"content");
-        datatypeValues.put(new Integer(100),"id");
-        datatypeValues.put(new Integer(101),"guid");
     }
 
 }
