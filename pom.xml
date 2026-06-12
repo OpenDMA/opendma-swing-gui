@@ -38,6 +38,27 @@
         </dependency>
     </dependencies>
 
+    <licenses>
+        <license>
+            <name>GPL-3.0-or-later</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0-standalone.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Stefan Kopf</name>
+            <organization>xaldon Technologies GmbH</organization>
+            <organizationUrl>https://www.xaldon.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>OpenDMA Contributors</name>
+            <organization>OpenDMA</organization>
+            <organizationUrl>https://www.opendma.org</organizationUrl>
+        </developer>
+    </developers>
+
     <build>
         <plugins>
             <plugin>
