@@ -22,7 +22,7 @@
         <url>https://github.com/OpenDMA/opendma-swing-gui</url>
         <connection>scm:git:git://github.com/OpenDMA/opendma-swing-gui.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/OpenDMA/opendma-swing-gui.git</developerConnection>
-        <tag>0.8</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
