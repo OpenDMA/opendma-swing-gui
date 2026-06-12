@@ -15,6 +15,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <opendma.version>0.8</opendma.version>
     </properties>
 
     <scm>
@@ -33,7 +34,7 @@
         <dependency>
             <groupId>org.opendma</groupId>
             <artifactId>opendma-api</artifactId>
-            <version>0.8</version>
+            <version>${opendma.version}</version>
         </dependency>
     </dependencies>
 
@@ -73,7 +74,7 @@
                                 <artifactItem>
                                     <groupId>org.opendma</groupId>
                                     <artifactId>opendma-xmlrepo</artifactId>
-                                    <version>0.8</version>
+                                    <version>${opendma.version}</version>
                                     <type>jar</type>
                                 </artifactItem>
                             </artifactItems>
@@ -100,6 +101,21 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.opendma</groupId>
+                        <artifactId>opendma-xmlrepo</artifactId>
+                        <version>${opendma.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <mainClass>com.xaldon.opendma.swingmanager.OpendmaSwingManager</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
